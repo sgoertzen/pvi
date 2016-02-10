@@ -8,10 +8,13 @@ import (
 // Program to read in poms and determine
 func main() {
     // Read path from parameters
+	if len(os.Args) < 1 {
+		log.Fatal("You must pass in the directory to scan")
+	}
     path := os.Args[1]
-    if len(path) == 0 {
+    /*if len(path) == 0 {
         log.Fatal("You must pass in the directory to scan")
-    }
+	}*/
     projects := GetProjects(path)
     generateReport(projects)
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"log"
 	"io/ioutil"
+	"path"
 )
 
 
@@ -73,8 +74,8 @@ type PomVersion struct {
 }
 
 
-func GetProjects(path string) []*Project {
-	files := getDirectories(path)
+func GetProjects(path2 string) []*Project {
+	files := getDirectories(path2)
 	pomProjects := PomProjects{}
 
 	// Loop over each one
@@ -83,7 +84,7 @@ func GetProjects(path string) []*Project {
 			continue
 		}
 
-		pomFile := path + directory.Name() + "/pom.xml"
+		pomFile := path.Join(path2, directory.Name(), "pom.xml")
 		//log.Println("Looking at file: " + pomFile)
 
 		// Check for a pom.xml
@@ -150,8 +151,11 @@ func link(pomProjects PomProjects) []*Project {
 		if (pomProject.Parent.ArtifactId.Value == "") {
 			parentProjects = append(parentProjects, &project)
 		} else {
+			log.Println("Appending child to parent")
 			// If it has a parent look up the parent in the all map
 			parent := allProjects[pomProject.Parent.ArtifactId.Value]
+
+			log.Println("Parent was found: " + parent.ArtifactId)
 
 			// GRRRRRRRRRRRRR!!!!!!!!!!!!!!!!!!!!!!!!
 			// This isn't going to work as it depends on the ordering of the projects!!
@@ -162,6 +166,7 @@ func link(pomProjects PomProjects) []*Project {
 			project.Parent = &parent
 			// Add ourselves to the parents children list
 			parent.Children = append(parent.Children, &project)
+			log.Printf("Length of children %d",  len(parent.Children))
 		}
 	}
 	return parentProjects
