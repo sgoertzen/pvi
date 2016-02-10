@@ -38,5 +38,8 @@ func TestLinkParentChild(t *testing.T) {
 
 	assert.Equal(t, "parent", output[0].ArtifactId)
 	log.Printf("Length of parent in test %d", len(output[0].Children))
-	//assert.Equal(t, "child", output[0].Children[0].ArtifactId)
+	assert.Equal(t, 1, len(output[0].Children))
+	if len(output[0].Children) > 0 {
+		assert.Equal(t, "child", output[0].Children[0].ArtifactId)
+	}
 }

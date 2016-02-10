@@ -133,8 +133,8 @@ func parseFile(pomFile string) PomProject {
 func link(pomProjects PomProjects) []*Project {
 	parentProjects := []*Project{}
 
-	var allProjects map[string]Project
-	allProjects = make(map[string]Project)
+	var allProjects map[string]*Project
+	allProjects = make(map[string]*Project)
 
 	// Loop over each project
 	for _, pomProject := range pomProjects {
@@ -145,7 +145,7 @@ func link(pomProjects PomProjects) []*Project {
 		project.Version = pomProject.Version.Value
 
 		// No matter what add it to the all projects map
-		allProjects[project.ArtifactId] = project
+		allProjects[project.ArtifactId] = &project
 
 		// If it has no parent add it to the parent projects
 		if (pomProject.Parent.ArtifactId.Value == "") {
@@ -161,9 +161,10 @@ func link(pomProjects PomProjects) []*Project {
 			// This isn't going to work as it depends on the ordering of the projects!!
 			// Can we sort this ahead of time into something with parents up front?
 			// Need to think about this...
+			// Could also just loop until all items are included or our the parent isn't found
 
 			// Update the pointer to our parent
-			project.Parent = &parent
+			project.Parent = parent
 			// Add ourselves to the parents children list
 			parent.Children = append(parent.Children, &project)
 			log.Printf("Length of children %d",  len(parent.Children))
