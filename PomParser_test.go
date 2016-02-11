@@ -60,8 +60,8 @@ func TestLinkParentChildOutOfOrder(t *testing.T) {
 	output := link(pomProjects)
 
 	assert.Equal(t, "parent", output[0].ArtifactId)
-//	assert.Equal(t, 1, len(output[0].Children))
-//	if len(output[0].Children) > 0 {
-//		assert.Equal(t, "child", output[0].Children[0].ArtifactId)
-//	}
+	assert.Equal(t, 1, len(output[0].Children))
+	if len(output[0].Children) > 0 {
+		assert.Equal(t, "child", output[0].Children[0].ArtifactId)
+	}
 }
