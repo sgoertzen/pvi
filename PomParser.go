@@ -136,39 +136,53 @@ func link(pomProjects PomProjects) []*Project {
 	var allProjects map[string]*Project
 	allProjects = make(map[string]*Project)
 
-	// Loop over each project
-	for _, pomProject := range pomProjects {
-		// Build up our linked project
-		project := Project{}
-		project.ArtifactId = pomProject.ArtifactId.Value
-		project.GroupId = pomProject.GroupId.Value
-		project.Version = pomProject.Version.Value
+	var remaining int
+	remaining = 0
+	for remaining != len(pomProjects) - len(allProjects) {
+		remaining = len(pomProjects) - len(allProjects)
+		// Loop over each project
+		for _, pomProject := range pomProjects {
+			if (allProjects[pomProject.ArtifactId.Value] != nil){
+				continue
+			}
 
-		// No matter what add it to the all projects map
-		allProjects[project.ArtifactId] = &project
+			if pomProject.Parent.ArtifactId.Value != "" && allProjects[pomProject.Parent.ArtifactId.Value] == nil {
+				continue
+			}
 
-		// If it has no parent add it to the parent projects
-		if (pomProject.Parent.ArtifactId.Value == "") {
-			parentProjects = append(parentProjects, &project)
-		} else {
-			log.Println("Appending child to parent")
-			// If it has a parent look up the parent in the all map
-			parent := allProjects[pomProject.Parent.ArtifactId.Value]
+			// Build up our linked project
+			project := Project{}
+			project.ArtifactId = pomProject.ArtifactId.Value
+			project.GroupId = pomProject.GroupId.Value
+			project.Version = pomProject.Version.Value
 
-			log.Println("Parent was found: " + parent.ArtifactId)
+			// No matter what add it to the all projects map
+			allProjects[project.ArtifactId] = &project
 
-			// GRRRRRRRRRRRRR!!!!!!!!!!!!!!!!!!!!!!!!
-			// This isn't going to work as it depends on the ordering of the projects!!
-			// Can we sort this ahead of time into something with parents up front?
-			// Need to think about this...
-			// Could also just loop until all items are included or our the parent isn't found
+			// If it has no parent add it to the parent projects
+			if (pomProject.Parent.ArtifactId.Value == "") {
+				parentProjects = append(parentProjects, &project)
+			} else {
+				log.Println("Appending child to parent")
+				// If it has a parent look up the parent in the all map
+				parent := allProjects[pomProject.Parent.ArtifactId.Value]
 
-			// Update the pointer to our parent
-			project.Parent = parent
-			// Add ourselves to the parents children list
-			parent.Children = append(parent.Children, &project)
-			log.Printf("Length of children %d",  len(parent.Children))
+				log.Println("Parent was found: " + parent.ArtifactId)
+
+				// GRRRRRRRRRRRRR!!!!!!!!!!!!!!!!!!!!!!!!
+				// This isn't going to work as it depends on the ordering of the projects!!
+				// Can we sort this ahead of time into something with parents up front?
+				// Need to think about this...
+				// Could also just loop until all items are included or our the parent isn't found
+
+				// Update the pointer to our parent
+				project.Parent = parent
+				// Add ourselves to the parents children list
+				parent.Children = append(parent.Children, &project)
+				log.Printf("Length of children %d", len(parent.Children))
+			}
 		}
+
 	}
 	return parentProjects
 }
