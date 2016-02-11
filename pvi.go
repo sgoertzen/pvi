@@ -3,6 +3,8 @@ package main
 import (
     "log"
     "os"
+	"strings"
+	"sort"
 )
 
 // Program to read in poms and determine
@@ -12,19 +14,22 @@ func main() {
 		log.Fatal("You must pass in the directory to scan")
 	}
     path := os.Args[1]
-    /*if len(path) == 0 {
-        log.Fatal("You must pass in the directory to scan")
-	}*/
     projects := GetProjects(path)
     generateReport(projects)
 }
 
 
-func generateReport(projects []*Project){
-	// Sort by parent
-    //sort.Sort(projects)
-    for i, p := range projects {
-        log.Println(i, p.ArtifactId)
+func generateReport(projects Projects){
+	sort.Sort(projects)
+    for _, p := range projects {
+		printProject(p, 0)
     }
 }
 
+func printProject(project *Project, depth int) {
+	log.Printf("%s%s (%s)", strings.Repeat("--", depth), project.ArtifactId, project.Version)
+	sort.Sort(project.Children)
+	for _, child := range project.Children {
+		printProject(child, depth+1)
+	}
+}

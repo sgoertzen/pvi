@@ -6,43 +6,14 @@ import (
 	"log"
 	"io/ioutil"
 	"path"
+"strings"
 )
 
-
-
-/*
-func (slice PomProjects) Len() int {
-    return len(slice)
-}
-
-func (slice PomProjects) Less(i, j int) bool {
-    // if neither has parent sort by name
-    if slice[i].Parent.ArtifactId.Value == "" && slice[j].Parent.ArtifactId.Value == "" {
-        return slice[i].ArtifactId.Value < slice[j].ArtifactId.Value
-    }
-    // If either parent is null sort that to the top
-    if slice[i].Parent.ArtifactId.Value == "" {
-        return true
-    }
-    if  slice[j].Parent.ArtifactId.Value == "" {
-        return false
-    }
-    // If they have the same parent sort by name
-    if slice[i].Parent.ArtifactId.Value == slice[j].Parent.ArtifactId.Value {
-        return slice[i].ArtifactId.Value < slice[j].ArtifactId.Value
-    }
-    // Otherwise sort by parent
-    return slice[i].Parent.ArtifactId.Value < slice[j].Parent.ArtifactId.Value;
-}
-
-func (slice PomProjects) Swap(i, j int) {
-    slice[i], slice[j] = slice[j], slice[i]
-}*/
-
+type Projects []*Project
 
 type Project struct {
 	Parent *Project
-	Children []*Project
+	Children Projects
 	ArtifactId string
 	GroupId string
 	Version string
@@ -74,7 +45,7 @@ type PomVersion struct {
 }
 
 
-func GetProjects(path2 string) []*Project {
+func GetProjects(path2 string) Projects {
 	files := getDirectories(path2)
 	pomProjects := PomProjects{}
 
@@ -130,8 +101,9 @@ func parseFile(pomFile string) PomProject {
 }
 
 
-func link(pomProjects PomProjects) []*Project {
-	parentProjects := []*Project{}
+func link(pomProjects PomProjects) Projects {
+	//parentProjects := []*Project{}
+	parentProjects := Projects{}
 
 	var allProjects map[string]*Project
 	allProjects = make(map[string]*Project)
@@ -163,26 +135,30 @@ func link(pomProjects PomProjects) []*Project {
 			if (pomProject.Parent.ArtifactId.Value == "") {
 				parentProjects = append(parentProjects, &project)
 			} else {
-				log.Println("Appending child to parent")
 				// If it has a parent look up the parent in the all map
 				parent := allProjects[pomProject.Parent.ArtifactId.Value]
-
-				log.Println("Parent was found: " + parent.ArtifactId)
-
-				// GRRRRRRRRRRRRR!!!!!!!!!!!!!!!!!!!!!!!!
-				// This isn't going to work as it depends on the ordering of the projects!!
-				// Can we sort this ahead of time into something with parents up front?
-				// Need to think about this...
-				// Could also just loop until all items are included or our the parent isn't found
 
 				// Update the pointer to our parent
 				project.Parent = parent
 				// Add ourselves to the parents children list
 				parent.Children = append(parent.Children, &project)
-				log.Printf("Length of children %d", len(parent.Children))
 			}
 		}
 
 	}
 	return parentProjects
 }
+
+
+func (slice Projects) Len() int {
+	return len(slice)
+}
+
+func (slice Projects) Less(i, j int) bool {
+	return strings.ToLower(slice[i].ArtifactId) < strings.ToLower(slice[j].ArtifactId)
+}
+
+func (slice Projects) Swap(i, j int) {
+	slice[i], slice[j] = slice[j], slice[i]
+}
+
