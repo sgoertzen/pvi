@@ -27,7 +27,11 @@ func generateReport(projects Projects){
 }
 
 func printProject(project *Project, depth int) {
-	log.Printf("%s%s (%s)", strings.Repeat("--", depth), project.ArtifactId, project.Version)
+	var misMatchError string
+	if project.MismatchParentVersion != "" {
+		misMatchError = " ** Warning: looking for parent version: " + project.MismatchParentVersion
+	}
+	log.Printf("%s%s (%s)%s", strings.Repeat("--", depth), project.ArtifactId, project.Version, misMatchError)
 	sort.Sort(project.Children)
 	for _, child := range project.Children {
 		printProject(child, depth+1)

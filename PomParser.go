@@ -17,6 +17,7 @@ type Project struct {
 	ArtifactId string
 	GroupId string
 	Version string
+	MismatchParentVersion string
 
 }
 
@@ -71,7 +72,7 @@ func GetProjects(path2 string) Projects {
 		//log.Println("Found: " + project.ArtifactId.Value + ":" + project.Version.Value + " (Parent: " + project.Parent.ArtifactId.Value + ":" + project.Parent.Version.Value + ")")
 	}
 
-	projects := link(pomProjects)
+	projects := transform(pomProjects)
 	return projects
 }
 
@@ -101,7 +102,7 @@ func parseFile(pomFile string) PomProject {
 }
 
 
-func link(pomProjects PomProjects) Projects {
+func transform(pomProjects PomProjects) Projects {
 	//parentProjects := []*Project{}
 	parentProjects := Projects{}
 
@@ -142,6 +143,10 @@ func link(pomProjects PomProjects) Projects {
 				project.Parent = parent
 				// Add ourselves to the parents children list
 				parent.Children = append(parent.Children, &project)
+				// Does parent version match what we need
+				if pomProject.Parent.Version.Value != parent.Version {
+					project.MismatchParentVersion = pomProject.Parent.Version.Value
+				}
 			}
 		}
 
