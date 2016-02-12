@@ -18,7 +18,7 @@ type Project struct {
 	GroupId string
 	Version string
 	MismatchParentVersion string
-
+	FullPath string
 }
 
 type PomProjects []PomProject
@@ -29,6 +29,7 @@ type PomProject struct {
 	GroupId PomGroupId `xml:"groupId"`
 	ArtifactId PomArtifactId `xml:"artifactId"`
 	Version PomVersion `xml:"version"`
+	FullPath string
 }
 type PomParent struct {
 	GroupId PomGroupId `xml:"groupId"`
@@ -66,6 +67,7 @@ func GetProjects(path2 string) Projects {
 		}
 		//log.Println("Parsing pom file at " + pomFile)
 		pomProject := parseFile(pomFile);
+		pomProject.FullPath = pomFile
 
 		pomProjects = append(pomProjects, pomProject)
 
@@ -128,6 +130,7 @@ func transform(pomProjects PomProjects) Projects {
 			project.ArtifactId = pomProject.ArtifactId.Value
 			project.GroupId = pomProject.GroupId.Value
 			project.Version = pomProject.Version.Value
+			project.FullPath = pomProject.FullPath
 
 			// No matter what add it to the all projects map
 			allProjects[project.ArtifactId] = &project

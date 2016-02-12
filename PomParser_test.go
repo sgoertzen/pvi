@@ -132,3 +132,9 @@ func TestParentVersionMatchDefault(t *testing.T) {
 	assert.Equal(t, "parent", output[0].ArtifactId)
 	assert.Equal(t, "", output[0].MismatchParentVersion)
 }
+
+func TestFullPath(t *testing.T) {
+	projects := GetProjects("./test-data")
+	assert.NotEmpty(t, projects[0].FullPath)
+
+}

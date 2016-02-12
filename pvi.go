@@ -5,6 +5,9 @@ import (
     "os"
 	"strings"
 	"sort"
+	"bufio"
+	"encoding/json"
+	"bytes"
 )
 
 // Program to read in poms and determine
@@ -15,25 +18,82 @@ func main() {
 	}
     path := os.Args[1]
     projects := GetProjects(path)
-    generateReport(projects)
+    outputResults(projects)
 }
 
 
-func generateReport(projects Projects){
+
+func outputResults(projects Projects){
 	sort.Sort(projects)
-    for _, p := range projects {
-		printProject(p, 0)
-    }
+
+//	if format == TEXT {
+//
+//	} else if format == JSON {
+//		// TODO
+//	}
+	output := toText(projects)
+	printToTerminal(output)
 }
 
-func printProject(project *Project, depth int) {
-	var misMatchError string
-	if project.MismatchParentVersion != "" {
-		misMatchError = " ** Warning: looking for parent version: " + project.MismatchParentVersion
+type Formatter interface {
+	format(projects Projects) string
+}
+type Printer interface {
+	print(output string)
+}
+
+func toJson(projects Projects) string {
+	b, err := json.Marshal(projects)
+	check(err)
+	return string(b)
+}
+
+func toText(projects Projects) string {
+	var buffer bytes.Buffer
+	for _, p := range projects {
+		printProject(p, 0, &buffer)
 	}
-	log.Printf("%s%s (%s)%s", strings.Repeat("--", depth), project.ArtifactId, project.Version, misMatchError)
+	return buffer.String()
+}
+
+func printProject(project *Project, depth int, buffer *bytes.Buffer) {
+	buffer.WriteString(strings.Repeat("--", depth))
+	buffer.WriteString(project.ArtifactId)
+	buffer.WriteString("(")
+	buffer.WriteString(project.Version)
+	buffer.WriteString(")")
+
+	if project.MismatchParentVersion != "" {
+		buffer.WriteString(" ** Warning: looking for parent version: ")
+		buffer.WriteString(project.MismatchParentVersion)
+	}
+	buffer.WriteString("\n")
 	sort.Sort(project.Children)
 	for _, child := range project.Children {
-		printProject(child, depth+1)
+		printProject(child, depth+1, buffer)
+	}
+}
+
+func printToTerminal(output string){
+	log.Println(output)
+}
+
+func printToFile(output string) {
+	f, err := os.Create("/tmp/dat2")
+	check(err)
+	defer f.Close()
+
+	w := bufio.NewWriter(f)
+	_, err = w.WriteString(output)
+	check(err)
+
+	w.Flush()
+
+	f.Sync()
+}
+
+func check(e error) {
+	if e != nil {
+		panic(e)
 	}
 }

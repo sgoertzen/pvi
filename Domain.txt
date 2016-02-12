@@ -1,0 +1,13 @@
+Domain Objects
+==============
+Project
+ - Artifact
+ - Group
+ - Version
+ - Parent
+
+Dependency
+ - Old Version
+ - New Version
+
+
