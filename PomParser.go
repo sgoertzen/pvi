@@ -12,7 +12,7 @@ import (
 type Projects []*Project
 
 type Project struct {
-	Parent *Project
+	Parent *Project `json:"-"`
 	Children Projects
 	ArtifactId string
 	GroupId string
