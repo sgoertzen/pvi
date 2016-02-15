@@ -2,50 +2,49 @@ package main
 
 import (
 	"encoding/xml"
-	"os"
-	"log"
 	"io/ioutil"
+	"log"
+	"os"
 	"path"
-"strings"
+	"strings"
 )
 
 type Projects []*Project
 
 type Project struct {
-	Parent *Project `json:"-"`
-	Children Projects
-	ArtifactId string
-	GroupId string
-	Version string
+	Parent                *Project `json:"-"`
+	Children              Projects
+	ArtifactId            string
+	GroupId               string
+	Version               string
 	MismatchParentVersion string
-	FullPath string
+	FullPath              string
 }
 
 type PomProjects []PomProject
 
 type PomProject struct {
-	XMLName xml.Name `xml:"project"`
-	Parent PomParent `xml:"parent"`
-	GroupId PomGroupId `xml:"groupId"`
+	XMLName    xml.Name      `xml:"project"`
+	Parent     PomParent     `xml:"parent"`
+	GroupId    PomGroupId    `xml:"groupId"`
 	ArtifactId PomArtifactId `xml:"artifactId"`
-	Version PomVersion `xml:"version"`
-	FullPath string
+	Version    PomVersion    `xml:"version"`
+	FullPath   string
 }
 type PomParent struct {
-	GroupId PomGroupId `xml:"groupId"`
+	GroupId    PomGroupId    `xml:"groupId"`
 	ArtifactId PomArtifactId `xml:"artifactId"`
-	Version PomVersion `xml:"version"`
+	Version    PomVersion    `xml:"version"`
 }
 type PomGroupId struct {
-	Value  string `xml:",chardata"`
+	Value string `xml:",chardata"`
 }
 type PomArtifactId struct {
-	Value  string `xml:",chardata"`
+	Value string `xml:",chardata"`
 }
 type PomVersion struct {
-	Value  string `xml:",chardata"`
+	Value string `xml:",chardata"`
 }
-
 
 func GetProjects(path2 string) Projects {
 	files := getDirectories(path2)
@@ -56,22 +55,16 @@ func GetProjects(path2 string) Projects {
 		if !directory.IsDir() {
 			continue
 		}
-
 		pomFile := path.Join(path2, directory.Name(), "pom.xml")
-		//log.Println("Looking at file: " + pomFile)
 
 		// Check for a pom.xml
 		if _, err := os.Stat(pomFile); os.IsNotExist(err) {
-			//log.Println("Skipping directory " + directory.Name() + "  as it does not have a pom.xml file.")
 			continue
 		}
-		//log.Println("Parsing pom file at " + pomFile)
-		pomProject := parseFile(pomFile);
+		pomProject := parseFile(pomFile)
 		pomProject.FullPath = pomFile
 
 		pomProjects = append(pomProjects, pomProject)
-
-		//log.Println("Found: " + project.ArtifactId.Value + ":" + project.Version.Value + " (Parent: " + project.Parent.ArtifactId.Value + ":" + project.Parent.Version.Value + ")")
 	}
 
 	projects := transform(pomProjects)
@@ -82,7 +75,7 @@ func getDirectories(path string) []os.FileInfo {
 	// Get a list of directories off this
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
-		log.Fatal("Error reading the directory")
+		log.Fatal("Error reading the directory: " + path)
 	}
 	return files
 }
@@ -103,7 +96,6 @@ func parseFile(pomFile string) PomProject {
 	return *v
 }
 
-
 func transform(pomProjects PomProjects) Projects {
 	//parentProjects := []*Project{}
 	parentProjects := Projects{}
@@ -113,11 +105,11 @@ func transform(pomProjects PomProjects) Projects {
 
 	var remaining int
 	remaining = 0
-	for remaining != len(pomProjects) - len(allProjects) {
+	for remaining != len(pomProjects)-len(allProjects) {
 		remaining = len(pomProjects) - len(allProjects)
 		// Loop over each project
 		for _, pomProject := range pomProjects {
-			if (allProjects[pomProject.ArtifactId.Value] != nil){
+			if allProjects[pomProject.ArtifactId.Value] != nil {
 				continue
 			}
 
@@ -136,7 +128,7 @@ func transform(pomProjects PomProjects) Projects {
 			allProjects[project.ArtifactId] = &project
 
 			// If it has no parent add it to the parent projects
-			if (pomProject.Parent.ArtifactId.Value == "") {
+			if pomProject.Parent.ArtifactId.Value == "" {
 				parentProjects = append(parentProjects, &project)
 			} else {
 				// If it has a parent look up the parent in the all map
@@ -157,7 +149,6 @@ func transform(pomProjects PomProjects) Projects {
 	return parentProjects
 }
 
-
 func (slice Projects) Len() int {
 	return len(slice)
 }
@@ -169,4 +160,3 @@ func (slice Projects) Less(i, j int) bool {
 func (slice Projects) Swap(i, j int) {
 	slice[i], slice[j] = slice[j], slice[i]
 }
-

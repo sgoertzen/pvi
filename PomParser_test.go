@@ -7,7 +7,7 @@ import (
 
 func TestTransform(t *testing.T) {
 
-	pomProject := PomProject{ArtifactId:PomArtifactId{Value:"myartifact"}}
+	pomProject := PomProject{ArtifactId: PomArtifactId{Value: "myartifact"}}
 
 	pomProjects := PomProjects{}
 	pomProjects = append(pomProjects, pomProject)
@@ -18,14 +18,14 @@ func TestTransform(t *testing.T) {
 
 func TestTransformParentChild(t *testing.T) {
 
-	parent := PomProject{ArtifactId:PomArtifactId{Value:"parent"}}
+	parent := PomProject{ArtifactId: PomArtifactId{Value: "parent"}}
 	child := PomProject{
-		ArtifactId:PomArtifactId{
-			Value:"child",
+		ArtifactId: PomArtifactId{
+			Value: "child",
 		},
-		Parent:PomParent{
-			ArtifactId:PomArtifactId{
-				Value:"parent",
+		Parent: PomParent{
+			ArtifactId: PomArtifactId{
+				Value: "parent",
 			},
 		},
 	}
@@ -43,14 +43,14 @@ func TestTransformParentChild(t *testing.T) {
 
 func TestTransformParentChildOutOfOrder(t *testing.T) {
 
-	parent := PomProject{ArtifactId:PomArtifactId{Value:"parent"}}
+	parent := PomProject{ArtifactId: PomArtifactId{Value: "parent"}}
 	child := PomProject{
-		ArtifactId:PomArtifactId{
-			Value:"child",
+		ArtifactId: PomArtifactId{
+			Value: "child",
 		},
-		Parent:PomParent{
-			ArtifactId:PomArtifactId{
-				Value:"parent",
+		Parent: PomParent{
+			ArtifactId: PomArtifactId{
+				Value: "parent",
 			},
 		},
 	}
@@ -68,17 +68,17 @@ func TestTransformParentChildOutOfOrder(t *testing.T) {
 
 func TestTransformParentMatchingVersion(t *testing.T) {
 
-	parent := PomProject{ArtifactId:PomArtifactId{Value:"parent"},Version:PomVersion{Value:"1.0"}}
+	parent := PomProject{ArtifactId: PomArtifactId{Value: "parent"}, Version: PomVersion{Value: "1.0"}}
 	child := PomProject{
-		ArtifactId:PomArtifactId{
-			Value:"child",
+		ArtifactId: PomArtifactId{
+			Value: "child",
 		},
-		Parent:PomParent{
-			ArtifactId:PomArtifactId{
-				Value:"parent",
+		Parent: PomParent{
+			ArtifactId: PomArtifactId{
+				Value: "parent",
 			},
-			Version:PomVersion{
-				Value:"1.0",
+			Version: PomVersion{
+				Value: "1.0",
 			},
 		},
 	}
@@ -96,17 +96,17 @@ func TestTransformParentMatchingVersion(t *testing.T) {
 
 func TestTransformParentWrongVersion(t *testing.T) {
 
-	parent := PomProject{ArtifactId:PomArtifactId{Value:"parent"},Version:PomVersion{Value:"2.0"}}
+	parent := PomProject{ArtifactId: PomArtifactId{Value: "parent"}, Version: PomVersion{Value: "2.0"}}
 	child := PomProject{
-		ArtifactId:PomArtifactId{
-			Value:"child",
+		ArtifactId: PomArtifactId{
+			Value: "child",
 		},
-		Parent:PomParent{
-			ArtifactId:PomArtifactId{
-				Value:"parent",
+		Parent: PomParent{
+			ArtifactId: PomArtifactId{
+				Value: "parent",
 			},
-			Version:PomVersion{
-				Value:"1.0",
+			Version: PomVersion{
+				Value: "1.0",
 			},
 		},
 	}
@@ -124,7 +124,7 @@ func TestTransformParentWrongVersion(t *testing.T) {
 
 func TestParentVersionMatchDefault(t *testing.T) {
 
-	parent := PomProject{ArtifactId:PomArtifactId{Value:"parent"},Version:PomVersion{Value:"2.0"}}
+	parent := PomProject{ArtifactId: PomArtifactId{Value: "parent"}, Version: PomVersion{Value: "2.0"}}
 	pomProjects := PomProjects{}
 	pomProjects = append(pomProjects, parent)
 	output := transform(pomProjects)

@@ -1,22 +1,14 @@
 package main
 
 import (
-	"encoding/json"
+	"bufio"
 	"bytes"
-	"strings"
-	"sort"
+	"encoding/json"
 	"log"
 	"os"
-	"bufio"
+	"sort"
+	"strings"
 )
-
-
-type Formatter interface {
-	format(projects Projects) string
-}
-type Printer interface {
-	print(output string)
-}
 
 func toJson(projects Projects) string {
 	b, err := json.Marshal(projects)
@@ -50,12 +42,12 @@ func printProject(project *Project, depth int, buffer *bytes.Buffer) {
 	}
 }
 
-func printToTerminal(output string){
+func printToTerminal(output string) {
 	log.Println(output)
 }
 
-func printToFile(output string) {
-	f, err := os.Create("/tmp/dat2")
+func printToFile(output string, filename string) {
+	f, err := os.Create(filename)
 	check(err)
 	defer f.Close()
 
@@ -64,7 +56,6 @@ func printToFile(output string) {
 	check(err)
 
 	w.Flush()
-
 	f.Sync()
 }
 
