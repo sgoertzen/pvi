@@ -5,6 +5,18 @@ import (
 	"testing"
 )
 
+
+// TODO: Check on the best way to run integration tests in Go (these are destructive)
+func TestGetProjects(t *testing.T) {
+	projects := GetProjects("./test-data/")
+
+	assert.Equal(t, "parent-test", projects[0].ArtifactId)
+	assert.Equal(t, "3.1.4", projects[0].Version)
+	assert.Equal(t, "child-test", projects[0].Children[0].ArtifactId)
+	assert.Equal(t, "2.2", projects[0].Children[0].Version)
+	assert.Equal(t, "3.1.1", projects[0].Children[0].MismatchParentVersion)
+}
+
 func TestTransform(t *testing.T) {
 
 	pomProject := PomProject{ArtifactId: PomArtifactId{Value: "myartifact"}}

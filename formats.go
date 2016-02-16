@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"log"
+	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -43,7 +43,7 @@ func printProject(project *Project, depth int, buffer *bytes.Buffer) {
 }
 
 func printToTerminal(output string) {
-	log.Println(output)
+	fmt.Println(output);
 }
 
 func printToFile(output string, filename string) {
