@@ -21,6 +21,8 @@ type Project struct {
 	FullPath              string
 }
 
+
+
 type PomProjects []PomProject
 
 type PomProject struct {
@@ -61,7 +63,11 @@ func GetProjects(path2 string) Projects {
 		if _, err := os.Stat(pomFile); os.IsNotExist(err) {
 			continue
 		}
-		pomProject := parseFile(pomFile)
+
+		pomProject, err := parseFile(pomFile)
+		if err != nil || len(pomProject.ArtifactId.Value) == 0 {
+			log.Println("Invalid pom file at: " + pomFile)
+		}
 		pomProject.FullPath = pomFile
 
 		pomProjects = append(pomProjects, pomProject)
@@ -80,20 +86,18 @@ func getDirectories(path string) []os.FileInfo {
 	return files
 }
 
-func parseFile(pomFile string) PomProject {
+func parseFile(pomFile string) (PomProject, error) {
 	v := new(PomProject)
 	xmlFile, err := os.Open(pomFile)
 	if err != nil {
-		log.Println("Error opening file:", err)
-		// TODO: Return an error here
-		return *v
+		return *v, err
 	}
 	defer xmlFile.Close()
 
 	b, _ := ioutil.ReadAll(xmlFile)
 
-	xml.Unmarshal(b, v)
-	return *v
+	err = xml.Unmarshal(b, v)
+	return *v, err
 }
 
 func transform(pomProjects PomProjects) Projects {
@@ -146,6 +150,16 @@ func transform(pomProjects PomProjects) Projects {
 
 	}
 	return parentProjects
+}
+
+
+func (slice Projects) find(artifactId string) Project {
+	for _, project := range slice {
+		if project.ArtifactId == artifactId {
+			return *project
+		}
+	}
+	return Project{}
 }
 
 func (slice Projects) Len() int {
