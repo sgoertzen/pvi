@@ -3,14 +3,11 @@ package main
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"log"
 )
 
 
 func TestGetProjects(t *testing.T) {
 	projects := GetProjects("./test-data/")
-
-	log.Printf("Length of projects is: %d", len(projects))
 	parent := projects.find("parent-test")
 	assert.NotEmpty(t, parent)
 
