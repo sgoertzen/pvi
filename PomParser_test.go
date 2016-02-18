@@ -5,8 +5,6 @@ import (
 	"testing"
 )
 
-
-// TODO: Check on the best way to run integration tests in Go (these are destructive)
 func TestGetProjects(t *testing.T) {
 	projects := GetProjects("./test-data/")
 

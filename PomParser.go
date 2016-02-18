@@ -97,7 +97,6 @@ func parseFile(pomFile string) PomProject {
 }
 
 func transform(pomProjects PomProjects) Projects {
-	//parentProjects := []*Project{}
 	parentProjects := Projects{}
 
 	var allProjects map[string]*Project

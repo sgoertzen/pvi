@@ -1,9 +1,9 @@
 package main
 
 import (
-"io/ioutil"
-"strings"
+	"io/ioutil"
 	"log"
+	"strings"
 )
 
 func UpdateParentVersion(project Project) {

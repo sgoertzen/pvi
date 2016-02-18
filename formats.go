@@ -43,7 +43,7 @@ func printProject(project *Project, depth int, buffer *bytes.Buffer) {
 }
 
 func printToTerminal(output string) {
-	fmt.Println(output);
+	fmt.Println(output)
 }
 
 func printToFile(output string, filename string) {
