@@ -1,13 +1,11 @@
 package main
 
 import (
-	"os/exec"
-	"os"
 	"log"
+	"os"
+	"os/exec"
 	"strings"
 )
-
-
 
 func (project *Project) build() (int, error) {
 	// TODO: support -Pintegration-tests

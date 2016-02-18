@@ -21,8 +21,6 @@ type Project struct {
 	FullPath              string
 }
 
-
-
 type PomProjects []PomProject
 
 type PomProject struct {
@@ -151,7 +149,6 @@ func transform(pomProjects PomProjects) Projects {
 	}
 	return parentProjects
 }
-
 
 func (slice Projects) find(artifactId string) Project {
 	for _, project := range slice {

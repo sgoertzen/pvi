@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-
 func TestGetProjects(t *testing.T) {
 	projects := GetProjects("./test-data/")
 	parent := projects.find("parent-test")
