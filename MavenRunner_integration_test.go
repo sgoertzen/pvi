@@ -12,7 +12,7 @@ func TestSuccessfulPom(t *testing.T) {
 	parent := projects.find("parent-test")
 	assert.NotEmpty(t, parent.FullPath)
 
-	value, err := parent.build()
+	value, err := parent.build(false)
 	assert.Equal(t, 0, value)
 	assert.Nil(t, err)
 }
@@ -22,7 +22,7 @@ func TestFailingPom(t *testing.T) {
 	failProject := projects.find("failing-test")
 	assert.NotEmpty(t, failProject.FullPath)
 
-	value, err := failProject.build()
+	value, err := failProject.build(false)
 	assert.Equal(t, 1, value)
 	assert.NotNil(t, err)
 }
