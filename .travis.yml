@@ -10,4 +10,4 @@ script:
  - go get golang.org/x/tools/cmd/vet
  - go vet
  - go test -v ./...                       # Run unit tests (verbose output)
-# - go test -l integration-tests           # Run integration tests
+ - go test -v -tags=integration           # Run integration tests

@@ -41,3 +41,9 @@ If the child project points to an older version of the parent pom then you would
 my-parent-project (1.4.2)
 --my-dependant-project (2.0.24) ** Warning: looking for parent version: 1.3.1
 ```
+
+##Development
+### Running integration tests
+```
+go test -tags=integration
+```
