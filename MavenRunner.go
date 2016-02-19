@@ -1,12 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"log"
 	"os/exec"
 	"strings"
-	"bufio"
 )
-
 
 func (project *Project) build(runIT bool) (int, error) {
 	app, err := exec.LookPath("mvn")

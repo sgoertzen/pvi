@@ -17,21 +17,21 @@ type VersionEyeProjects []*VersionEyeProject
 
 type VersionEyeProject struct {
 	ProjectId            string
-	Id                   string                 `json:"id"`
-	Name                 string                 `json:"name"`
-	ProjectType          string                 `json:"project_type"`
-	Public               bool                   `json:"public"`
-	Period               string                 `json:"period"`
-	Source               string                 `json:"source"`
-	DependencyNumber     int                    `json:"dep_number"`
-	OutNumber            int                    `json:"out_number"`
-	LicensesRed          int                    `json:"licenses_red"`
-	LicensesUnknown      int                    `json:"licenses_unknown"`
-	DependencyNumberSum  int                    `json:"dep_number_sum"`
-	OutNumberSum         int                    `json:"out_number_sum"`
-	LicensesRedSum       int                    `json:"licenses_red_sum"`
-	LicensesUnknownSum   int                    `json:"licenses_unknown_sum"`
-	LicenseWhiteListName string                 `json:"license_whitelist_name"`
+	Id                   string     `json:"id"`
+	Name                 string     `json:"name"`
+	ProjectType          string     `json:"project_type"`
+	Public               bool       `json:"public"`
+	Period               string     `json:"period"`
+	Source               string     `json:"source"`
+	DependencyNumber     int        `json:"dep_number"`
+	OutNumber            int        `json:"out_number"`
+	LicensesRed          int        `json:"licenses_red"`
+	LicensesUnknown      int        `json:"licenses_unknown"`
+	DependencyNumberSum  int        `json:"dep_number_sum"`
+	OutNumberSum         int        `json:"out_number_sum"`
+	LicensesRedSum       int        `json:"licenses_red_sum"`
+	LicensesUnknownSum   int        `json:"licenses_unknown_sum"`
+	LicenseWhiteListName string     `json:"license_whitelist_name"`
 	CreatedAt            CustomTime `json:"created_at"`
 	UpdatedAt            CustomTime `json:"updated_at"`
 	// Format of dates is "20.01.2016-22:32"
@@ -49,6 +49,12 @@ func (ct *CustomTime) UnmarshalJSON(b []byte) (err error) {
 	}
 	ct.Time, err = time.Parse(ctLayout, string(b))
 	return
+}
+
+var apikey string
+
+func SetKey(key string) {
+	apikey = key
 }
 
 func GetAvailableUpdates(project Project) bool {
@@ -70,8 +76,11 @@ func lookupProject(project Project) *VersionEyeProject {
 	return new(VersionEyeProject)
 }
 
-func getAllProjectsFromVersionEye() VersionEyeProjects {
-	resp, err := http.Get("https://www.versioneye.com/api/v2/projects?api_key=c78c87ec4d8f647d818c")
+func getAllProjectsFromVersionEye(key string) VersionEyeProjects {
+	if len(apikey) == 0 {
+		panic("No Version Eye API Key set")
+	}
+	resp, err := http.Get("https://www.versioneye.com/api/v2/projects?api_key=" + apikey)
 	checkError(err)
 	defer resp.Body.Close()
 

@@ -4,6 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
+
 var testJson = `[{
 		"id": "abc123",
 		"name": "user/name",
