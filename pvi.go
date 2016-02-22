@@ -4,6 +4,7 @@ import (
 	"flag"
 	"sort"
 	"strings"
+	"github.com/sgoertzen/veye"
 )
 
 // Program to read in poms and determine
@@ -15,6 +16,8 @@ func main() {
 
 	projects := GetProjects(*path)
 	outputResults(projects, *format, *filename)
+
+	veye.SetKey("something")
 }
 
 func outputResults(projects Projects, format string, filename string) {
