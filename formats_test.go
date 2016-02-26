@@ -1,4 +1,4 @@
-package main
+package pvi
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -9,7 +9,7 @@ func TestText(t *testing.T) {
 	projects := Projects{}
 	projects = append(projects, &Project{ArtifactId: "testproj", Version: "1.0"})
 
-	json := toText(projects)
+	json := AsText(projects)
 
 	assert.Equal(t, "testproj(1.0)\n", json)
 }
@@ -18,7 +18,7 @@ func TestJson(t *testing.T) {
 	projects := Projects{}
 	projects = append(projects, &Project{ArtifactId: "testproj"})
 
-	json := toJson(projects)
+	json := AsJson(projects)
 
 	assert.Equal(t, "[{\"Children\":null,\"ArtifactId\":\"testproj\",\"GroupId\":\"\",\"Version\":\"\",\"MismatchParentVersion\":\"\",\"FullPath\":\"\"}]", json)
 }
@@ -31,7 +31,7 @@ func TestJsonWithChild(t *testing.T) {
 	projects := Projects{}
 	projects = append(projects, &parent)
 
-	json := toJson(projects)
+	json := AsJson(projects)
 
 	assert.NotNil(t, json)
 }

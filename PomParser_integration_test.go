@@ -1,6 +1,6 @@
 // +build integration
 
-package main
+package pvi
 
 import (
 	"github.com/stretchr/testify/assert"

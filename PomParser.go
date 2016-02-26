@@ -1,4 +1,4 @@
-package main
+package pvi
 
 import (
 	"encoding/xml"

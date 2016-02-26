@@ -5,6 +5,9 @@ import (
 	"sort"
 	"strings"
 	"github.com/sgoertzen/veye"
+	"github.com/sgoertzen/pvi"
+	"net/http"
+	"io"
 )
 
 // Program to read in poms and determine
@@ -14,25 +17,35 @@ func main() {
 	var filename = flag.String("filename", "", "The file in which the output should be stored.  If this is left off the output will be printed to the console")
 	flag.Parse()
 
-	projects := GetProjects(*path)
+	projects := pvi.GetProjects(*path)
 	outputResults(projects, *format, *filename)
 
 	veye.SetKey("something")
+	runServer()
 }
 
-func outputResults(projects Projects, format string, filename string) {
+func hello(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "Hello world!")
+}
+
+func runServer () {
+	http.HandleFunc("/", hello)
+	http.ListenAndServe(":8000", nil)
+}
+
+func outputResults(projects pvi.Projects, format string, filename string) {
 	sort.Sort(projects)
 
 	var output string
 	if strings.EqualFold(format, "TEXT") {
-		output = toText(projects)
+		output = pvi.AsText(projects)
 	} else {
-		output = toJson(projects)
+		output = pvi.AsJson(projects)
 	}
 
 	if filename != "" {
-		printToFile(output, filename)
+		pvi.PrintToFile(output, filename)
 	} else {
-		printToTerminal(output)
+		pvi.PrintToTerminal(output)
 	}
 }

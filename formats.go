@@ -1,4 +1,4 @@
-package main
+package pvi
 
 import (
 	"bufio"
@@ -10,13 +10,13 @@ import (
 	"strings"
 )
 
-func toJson(projects Projects) string {
+func AsJson(projects Projects) string {
 	b, err := json.Marshal(projects)
 	check(err)
 	return string(b)
 }
 
-func toText(projects Projects) string {
+func AsText(projects Projects) string {
 	var buffer bytes.Buffer
 	for _, p := range projects {
 		printProject(p, 0, &buffer)
@@ -42,11 +42,11 @@ func printProject(project *Project, depth int, buffer *bytes.Buffer) {
 	}
 }
 
-func printToTerminal(output string) {
+func PrintToTerminal(output string) {
 	fmt.Println(output)
 }
 
-func printToFile(output string, filename string) {
+func PrintToFile(output string, filename string) {
 	f, err := os.Create(filename)
 	check(err)
 	defer f.Close()

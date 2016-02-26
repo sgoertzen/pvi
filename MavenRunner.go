@@ -1,4 +1,4 @@
-package main
+package pvi
 
 import (
 	"bufio"
@@ -27,6 +27,7 @@ func (project *Project) build(runIT bool) (int, error) {
 	in := bufio.NewScanner(stdout)
 
 	for in.Scan() {
+		// Uncomment if we want to include maven output in the logs
 		//log.Printf(in.Text())
 	}
 
