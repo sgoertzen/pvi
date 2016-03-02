@@ -8,6 +8,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"github.com/fatih/color"
 )
 
 func AsJson(projects Projects) string {
@@ -16,29 +17,31 @@ func AsJson(projects Projects) string {
 	return string(b)
 }
 
-func AsText(projects Projects) string {
+func AsText(projects Projects, nocolor bool) string {
 	var buffer bytes.Buffer
 	for _, p := range projects {
-		printProject(p, 0, &buffer)
+		printProject(p, 0, &buffer, nocolor)
 	}
 	return buffer.String()
 }
 
-func printProject(project *Project, depth int, buffer *bytes.Buffer) {
-	buffer.WriteString(strings.Repeat("--", depth))
-	buffer.WriteString(project.ArtifactId)
-	buffer.WriteString("(")
+func printProject(project *Project, depth int, buffer *bytes.Buffer, noColor bool) {
+	color.NoColor = noColor
+
+	buffer.WriteString(strings.Repeat("    ", depth))
+	buffer.WriteString(color.GreenString(project.ArtifactId))
+	buffer.WriteString(" (")
 	buffer.WriteString(project.Version)
 	buffer.WriteString(")")
 
 	if project.MismatchParentVersion != "" {
-		buffer.WriteString(" ** Warning: looking for parent version: ")
+		buffer.WriteString(color.YellowString(" Warning: looking for parent version: "))
 		buffer.WriteString(project.MismatchParentVersion)
 	}
 	buffer.WriteString("\n")
 	sort.Sort(project.Children)
 	for _, child := range project.Children {
-		printProject(child, depth+1, buffer)
+		printProject(child, depth+1, buffer, noColor)
 	}
 }
 

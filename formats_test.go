@@ -9,9 +9,17 @@ func TestText(t *testing.T) {
 	projects := Projects{}
 	projects = append(projects, &Project{ArtifactId: "testproj", Version: "1.0"})
 
-	json := AsText(projects)
+	json := AsText(projects, true)
 
-	assert.Equal(t, "testproj(1.0)\n", json)
+	assert.Equal(t, "testproj (1.0)\n", json)
+}
+func TestTextColor(t *testing.T) {
+	projects := Projects{}
+	projects = append(projects, &Project{ArtifactId: "testproj", Version: "1.0"})
+
+	json := AsText(projects, false)
+
+	assert.Equal(t, "\x1b[32mtestproj\x1b[0m (1.0)\n", json)
 }
 
 func TestJson(t *testing.T) {
