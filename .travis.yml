@@ -10,5 +10,5 @@ script:
  - go get golang.org/x/tools/cmd/vet
  - go vet
  - go test -v -tags=integration           # Run integration tests + unit tests
- - cd cmd/commandline
+ - cd cmd/pvi
  - go build

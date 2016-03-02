@@ -17,10 +17,10 @@ func AsJson(projects Projects) string {
 	return string(b)
 }
 
-func AsText(projects Projects, nocolor bool) string {
+func AsText(projects Projects, noColor bool) string {
 	var buffer bytes.Buffer
 	for _, p := range projects {
-		printProject(p, 0, &buffer, nocolor)
+		printProject(p, 0, &buffer, noColor)
 	}
 	return buffer.String()
 }
