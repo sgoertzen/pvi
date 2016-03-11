@@ -43,7 +43,7 @@ func getConfiguration() config {
 }
 
 func validate(projects pvi.Projects, path string) {
-	if projects.Len() > 0 {
+	if projects.Len() == 0 {
 		log.Printf("No project directories found under %s", path)
 		os.Exit(0)
 	}

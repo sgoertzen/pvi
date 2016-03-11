@@ -5,6 +5,7 @@ import (
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 	"log"
+    "os"
 	"os/exec"
 )
 
@@ -30,8 +31,7 @@ func refreshAllRepos(org string) error {
 }
 
 func getClient() *github.Client {
-	// TODO - pull this from GITHUB_TOKEN env variable
-	token := oauth2.Token{AccessToken: "c3f8fc9bb64a1c6c449000201bccd1527685b7cb"}
+	token := oauth2.Token{AccessToken: os.Getenv("GITHUB_TOKEN")}
 	ts := oauth2.StaticTokenSource(&token)
 	tc := oauth2.NewClient(oauth2.NoContext, ts)
 	client := github.NewClient(tc)
