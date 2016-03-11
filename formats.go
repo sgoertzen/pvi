@@ -5,10 +5,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
 	"os"
 	"sort"
 	"strings"
-	"github.com/fatih/color"
 )
 
 func AsJson(projects Projects) string {

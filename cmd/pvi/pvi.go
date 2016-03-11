@@ -1,38 +1,52 @@
 package main
 
 import (
-	"flag"
+	"github.com/sgoertzen/pvi"
+	"gopkg.in/alecthomas/kingpin.v2"
+	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
-	//"github.com/sgoertzen/veye"
-	"github.com/sgoertzen/pvi"
-	"net/http"
-	"io"
 )
+
+type config struct {
+	path     *string
+	format   *string
+	filename *string
+	nocolor  *bool
+	version  *bool
+}
 
 // Program to read in poms and determine
 func main() {
-	var path = flag.String("path", ".", "The `directory` that contains subfolders with maven projects.  Example: '/user/code/projects/'")
-	var format = flag.String("format", "text", "Specify the output format.  Should be either `'text' or 'json'`")
-	var filename = flag.String("filename", "", "The file in which the output should be stored.  If this is left off the output will be printed to the console")
-	var noColor = flag.Bool("nocolor", false, "Do not color the output.  Ignored if filename is specified.")
-
-	flag.Parse()
-
-	projects := pvi.GetProjects(*path)
-	outputResults(projects, *format, *filename, *noColor)
-
-	//veye.SetKey("something")
-	//runServer()
+	config := getConfiguration()
+	projects := pvi.GetProjects(*config.path)
+	validate(projects, *config.path)
+	outputResults(projects, *config.format, *config.filename, *config.nocolor)
 }
 
-func hello(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Hello world!")
+func getConfiguration() config {
+	config := config{}
+	config.path = kingpin.Arg("path", "The `directory` that contains subfolders with maven projects.  Defaults to current directory.  Example: '/user/code/projects/'").Default(".").String()
+	config.format = kingpin.Flag("format", "Specify the output format.  Should be either 'text' or 'json'").Default("text").Short('o').String()
+	config.filename = kingpin.Flag("filename", "The file in which the output should be stored.  If this is left off the output will be printed to the console").Short('f').String()
+	config.nocolor = kingpin.Flag("nocolor", "Do not color the output.  Ignored if filename is specified.").Default("false").Short('n').Bool()
+	kingpin.Version("1.0.0")
+	kingpin.CommandLine.VersionFlag.Short('v')
+	kingpin.CommandLine.HelpFlag.Short('?')
+
+	kingpin.Parse()
+
+	*config.path, _ = filepath.Abs(*config.path)
+	return config
 }
 
-func runServer () {
-	http.HandleFunc("/", hello)
-	http.ListenAndServe(":8000", nil)
+func validate(projects pvi.Projects, path string) {
+	if projects.Len() > 0 {
+		log.Printf("No project directories found under %s", path)
+		os.Exit(0)
+	}
 }
 
 func outputResults(projects pvi.Projects, format string, filename string, noColor bool) {

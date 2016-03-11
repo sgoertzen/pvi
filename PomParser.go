@@ -46,8 +46,8 @@ type PomVersion struct {
 	Value string `xml:",chardata"`
 }
 
-func GetProjects(path2 string) Projects {
-	files := getDirectories(path2)
+func GetProjects(projectPath string) Projects {
+	files := getDirectories(projectPath)
 	pomProjects := PomProjects{}
 
 	// Loop over each one
@@ -55,7 +55,7 @@ func GetProjects(path2 string) Projects {
 		if !directory.IsDir() {
 			continue
 		}
-		pomFile := path.Join(path2, directory.Name(), "pom.xml")
+		pomFile := path.Join(projectPath, directory.Name(), "pom.xml")
 
 		// Check for a pom.xml
 		if _, err := os.Stat(pomFile); os.IsNotExist(err) {
@@ -76,6 +76,7 @@ func GetProjects(path2 string) Projects {
 }
 
 func getDirectories(path string) []os.FileInfo {
+    
 	// Get a list of directories off this
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
