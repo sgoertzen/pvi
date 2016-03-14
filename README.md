@@ -12,15 +12,17 @@ go get github.com/sgoertzen/pvi/cmd/pvi
 
 ## Usage:
 ```
-pvi [-filename (name)] [-format (text or json)] [-path (path)] [-nocolor]
--filename string
-    The file in which the output should be stored.  If this is left off the output will be printed to the console
--format 'text' or 'json'
-    Specify the output format.  Should be either 'text' or 'json' (default "text")
--path directory
-    The directory that contains subfolders with maven projects.  Example: '/user/code/projects/' (default ".")
--nocolor
-    Do not color the output.  Ignored if filename is specified.
+usage: pvi [<flags>] [<path>]
+
+Flags:
+  -?, --help               Show context-sensitive help (also try --help-long and --help-man).
+  -o, --format="text"      Specify the output format. Should be either 'text' or 'json'
+  -f, --filename=FILENAME  The file in which the output should be stored. If this is left off the output will be printed to the console
+  -n, --nocolor            Do not color the output. Ignored if filename is specified.
+  -v, --version            Show application version.
+
+Args:
+  [<path>]  The `directory` that contains subfolders with maven projects. Defaults to current directory. Example: '/user/code/projects/'
 ```
 
 #### Examples
@@ -29,9 +31,9 @@ Run the program in the current directory
 pvi 
 ```
 
-With options
+Return JSON and store into a file
 ```
-pvi -path /usr/code -format json
+pvi ../../MyCode -o=json -f=myoutput.json
 ```
 
 ##Example:
