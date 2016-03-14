@@ -11,22 +11,44 @@ import (
 
 // CloneAllRepos clones all repos for an orgnaization
 func CloneAllRepos(orgname string) error {
-	client := github.NewClient(nil)
-	org, resp, err := client.Organizations.Get(orgname)
-	check(err)
+	client := getClient()
+	org, resp, _ := client.Organizations.Get(orgname)
+    if (resp.StatusCode == 404) {
+        log.Printf("No GitHub organization found named %s", orgname)
+        return nil
+    }
+    if (resp.StatusCode == 401) {
+        log.Printf("Access not authorized.  Add your Github token to an environment variable GITHUB_TOKEN")
+    }
 	check(github.CheckResponse(resp.Response))
-	log.Printf("total private repos: %d", org.TotalPrivateRepos)
+	log.Printf("Found %d private repo(s) for %s", *org.TotalPrivateRepos, orgname)
+    
+    opt := &github.RepositoryListByOrgOptions{
+	    ListOptions: github.ListOptions{PerPage: 100},
+    }
+    // get all pages of results
+    var allRepos []github.Repository
+    for {
+        repos, resp, err := client.Repositories.ListByOrg(orgname, opt)
+        if err != nil {
+            return err
+        }
+        allRepos = append(allRepos, repos...)
+        if resp.NextPage == 0 {
+            break
+        }
+        opt.ListOptions.Page = resp.NextPage
+    }
 
-	repos, resp, err := client.Repositories.ListByOrg(*org.Name, nil)
-	for _, repo := range repos {
-		// clone!!
-		log.Println("would clone " + *repo.Name + " (" + *repo.CloneURL + ")")
-		//clone(*repo.CloneURL)
+    for _, repo := range allRepos {
+		log.Println("Cloning " + *repo.Name + " (" + *repo.SSHURL + ")")
+		clone(*repo.SSHURL)
 	}
 	return nil
 }
 
-func refreshAllRepos(org string) error {
+// RefreshAllRepos gets the latest for all repos
+func RefreshAllRepos(org string) error {
 	return nil
 }
 
@@ -53,7 +75,7 @@ func clone(cloneURL string) (int, error) {
 	in := bufio.NewScanner(stdout)
 
 	for in.Scan() {
-		// Uncomment if we want to include maven output in the logs
+		// Uncomment if we want to include git output in the logs
 		//log.Printf(in.Text())
 	}
 
