@@ -8,6 +8,7 @@ Pom Version Information is a command line tool for analyzing multiple maven proj
 ## Install:
 ```
 go get github.com/sgoertzen/pvi/cmd/pvi
+go install github.com/sgoertzen/pvi/cmd/pvi
 ```
 
 ## Usage:

@@ -8,8 +8,8 @@ import (
 )
 
 func TestParentEdit(t *testing.T) {
-	// Cleanup in case of failed previous test
-	SetParentVersionInPom("./test-data/child/pom.xml", "3.1.4", "3.1.1")
+	// Cleanup
+    defer SetParentVersionInPom("./test-data/child/pom.xml", "3.1.4", "3.1.1")
 
 	projects := GetProjects("./test-data/")
 	parent := projects.find("parent-test")
@@ -23,7 +23,4 @@ func TestParentEdit(t *testing.T) {
 
 	projectsUpdated := GetProjects("./test-data/")
 	assert.Empty(t, projectsUpdated.find("parent-test").Children[0].MismatchParentVersion)
-
-	// Cleanup
-	SetParentVersionInPom("./test-data/child/pom.xml", "3.1.4", "3.1.1")
 }
