@@ -20,7 +20,7 @@ Flags:
   -o, --format="text"      Specify the output format. Should be either 'text' or 'json'
   -f, --filename=FILENAME  The file in which the output should be stored. If this is left off the output will be printed to the console
   -n, --nocolor            Do not color the output. Ignored if filename is specified.
-  -d, --verbose            Output debug information during the run.
+  -d, --debug              Output debug information during the run.
   -v, --version            Show application version.
 
 Args:

@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (project *Project) build(runIT bool) (int, error) {
+func (project *Project) build(runIT bool, debug bool) (int, error) {
 	app, err := exec.LookPath("mvn")
 	var cmd *exec.Cmd
 	if runIT {
@@ -27,8 +27,9 @@ func (project *Project) build(runIT bool) (int, error) {
 	in := bufio.NewScanner(stdout)
 
 	for in.Scan() {
-		// Uncomment if we want to include maven output in the logs
-		//log.Printf(in.Text())
+		if debug {
+		    log.Printf(in.Text())
+        }
 	}
 
 	err = cmd.Wait()

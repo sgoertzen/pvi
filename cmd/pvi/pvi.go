@@ -15,13 +15,13 @@ type config struct {
 	format   *string
 	filename *string
 	nocolor  *bool
-	verbose  *bool
+	debug  *bool
 }
 
 // Program to read in poms and determine
 func main() {
 	config := getConfiguration()
-	projects := pvi.GetProjects(*config.path, *config.verbose)
+	projects := pvi.GetProjects(*config.path, *config.debug)
 	validate(projects, config)
 	outputResults(projects, config)
 }
@@ -32,14 +32,14 @@ func getConfiguration() config {
 	config.format = kingpin.Flag("format", "Specify the output format.  Should be either 'text' or 'json'").Default("text").Short('o').String()
 	config.filename = kingpin.Flag("filename", "The file in which the output should be stored.  If this is left off the output will be printed to the console").Short('f').String()
 	config.nocolor = kingpin.Flag("nocolor", "Do not color the output.  Ignored if filename is specified.").Default("false").Short('n').Bool()
-	config.verbose = kingpin.Flag("verbose", "Output debug information during the run.").Default("false").Short('d').Bool()
+	config.debug = kingpin.Flag("debug", "Output debug information during the run.").Default("false").Short('d').Bool()
 	kingpin.Version("1.0.0")
 	kingpin.CommandLine.VersionFlag.Short('v')
 	kingpin.CommandLine.HelpFlag.Short('?')
 
 	kingpin.Parse()
     
-    if *config.verbose {
+    if *config.debug {
         config.print()
     }
 
