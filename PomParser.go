@@ -58,11 +58,11 @@ type PomVersion struct {
 }
 
 // GetProjects get all projects by reading the given directory
-func GetProjects(projectPath string, verbose bool) Projects {
+func GetProjects(projectPath string, debug bool) Projects {
 	files := getDirectories(projectPath)
 	pomProjects := PomProjects{}
     
-    if verbose {
+    if debug {
         log.Printf("Found %d files/directories under %s", len(files), projectPath)
     }
 
@@ -70,7 +70,7 @@ func GetProjects(projectPath string, verbose bool) Projects {
 	for _, directory := range files {
         
 		if !directory.IsDir() {
-            if verbose {
+            if debug {
                 log.Printf("Skipping %s as it is not a directory", directory.Name())
             }
 			continue
@@ -79,7 +79,7 @@ func GetProjects(projectPath string, verbose bool) Projects {
 
 		// Check for a pom.xml
 		if _, err := os.Stat(pomFile); os.IsNotExist(err) {
-            if verbose {
+            if debug {
                 log.Printf("Unable to find pom file at %s", pomFile)
             }
 			continue
@@ -93,12 +93,12 @@ func GetProjects(projectPath string, verbose bool) Projects {
 
 		pomProjects = append(pomProjects, pomProject)
         
-        if verbose {
+        if debug {
             log.Printf("Successfully read in project %s from %s", pomProject.ArtifactID, pomFile)
         }
 	}
 
-	projects := transform(pomProjects, verbose)
+	projects := transform(pomProjects, debug)
 	return projects
 }
 
@@ -126,8 +126,8 @@ func parseFile(pomFile string) (PomProject, error) {
 	return *v, err
 }
 
-func transform(pomProjects PomProjects, verbose bool) Projects {
-    if verbose {
+func transform(pomProjects PomProjects, debug bool) Projects {
+    if debug {
         log.Printf("Transforming %d projects", len(pomProjects))
     }
 	parentProjects := Projects{}
@@ -143,13 +143,13 @@ func transform(pomProjects PomProjects, verbose bool) Projects {
 		// Loop over each project
 		for _, pomProject := range pomProjects {
 			if allProjects[pomProject.ArtifactID.Value] != nil {
-                if verbose {
+                if debug {
                     log.Printf("Skipping %s as it has already been processed", pomProject.ArtifactID.Value)
                 }
 				continue
 			}
 			if pomProject.Parent.ArtifactID.Value != "" && allProjects[pomProject.Parent.ArtifactID.Value] == nil {
-                if verbose {
+                if debug {
                     log.Printf("Skipping %s as the parent project has not been processed yet", pomProject.ArtifactID.Value)
                 }
 				continue
@@ -181,7 +181,7 @@ func transform(pomProjects PomProjects, verbose bool) Projects {
 					project.MismatchParentVersion = pomProject.Parent.Version.Value
 				}
 			}
-            if verbose {
+            if debug {
                 if project.Parent == nil {
                     log.Printf("%s added with no parent", project.ArtifactID)
                 } else {
