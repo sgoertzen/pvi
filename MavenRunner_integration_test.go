@@ -8,7 +8,7 @@ import (
 )
 
 func TestSuccessfulPom(t *testing.T) {
-	projects := GetProjects("./test-data/")
+	projects := GetProjects("./test-data/", false)
 	parent := projects.find("parent-test")
 	assert.NotEmpty(t, parent.FullPath)
 
@@ -18,7 +18,7 @@ func TestSuccessfulPom(t *testing.T) {
 }
 
 func TestFailingPom(t *testing.T) {
-	projects := GetProjects("./test-data/")
+	projects := GetProjects("./test-data/", false)
 	failProject := projects.find("failing-test")
 	assert.NotEmpty(t, failProject.FullPath)
 

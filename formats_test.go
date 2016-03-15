@@ -7,39 +7,39 @@ import (
 
 func TestText(t *testing.T) {
 	projects := Projects{}
-	projects = append(projects, &Project{ArtifactId: "testproj", Version: "1.0"})
+	projects = append(projects, &Project{ArtifactID: "testproj", Version: "1.0"})
 
-	json := AsText(projects, true)
+	text := projects.AsText(true)
 
-	assert.Equal(t, "testproj (1.0)\n", json)
+	assert.Equal(t, "testproj (1.0)\n", text)
 }
 func TestTextColor(t *testing.T) {
 	projects := Projects{}
-	projects = append(projects, &Project{ArtifactId: "testproj", Version: "1.0"})
+	projects = append(projects, &Project{ArtifactID: "testproj", Version: "1.0"})
 
-	json := AsText(projects, false)
+	text := projects.AsText(false)
 
-	assert.Equal(t, "\x1b[32mtestproj\x1b[0m (1.0)\n", json)
+	assert.Equal(t, "\x1b[32mtestproj\x1b[0m (1.0)\n", text)
 }
 
 func TestJson(t *testing.T) {
 	projects := Projects{}
-	projects = append(projects, &Project{ArtifactId: "testproj"})
+	projects = append(projects, &Project{ArtifactID: "testproj"})
 
-	json := AsJson(projects)
+	json := projects.AsJSON()
 
-	assert.Equal(t, "[{\"Children\":null,\"ArtifactId\":\"testproj\",\"GroupId\":\"\",\"Version\":\"\",\"MismatchParentVersion\":\"\",\"FullPath\":\"\"}]", json)
+	assert.Equal(t, "[{\"Children\":null,\"ArtifactID\":\"testproj\",\"GroupID\":\"\",\"Version\":\"\",\"MismatchParentVersion\":\"\",\"FullPath\":\"\"}]", json)
 }
 
 func TestJsonWithChild(t *testing.T) {
-	parent := Project{ArtifactId: "parent"}
-	child := Project{ArtifactId: "child", Parent: &parent}
+	parent := Project{ArtifactID: "parent"}
+	child := Project{ArtifactID: "child", Parent: &parent}
 	parent.Children = append(parent.Children, &child)
 
 	projects := Projects{}
 	projects = append(projects, &parent)
 
-	json := AsJson(projects)
+	json := projects.AsJSON()
 
 	assert.NotNil(t, json)
 }

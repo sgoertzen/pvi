@@ -1,23 +1,22 @@
 package pvi
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/fatih/color"
-	"os"
 	"sort"
 	"strings"
 )
 
-func AsJson(projects Projects) string {
+// AsJSON returns the projects in a minimized JSON format.
+func (projects Projects) AsJSON() string {
 	b, err := json.Marshal(projects)
 	check(err)
 	return string(b)
 }
 
-func AsText(projects Projects, noColor bool) string {
+// AsText will return the projects in a readable test format.
+func (projects Projects) AsText(noColor bool) string {
 	var buffer bytes.Buffer
 	for _, p := range projects {
 		printProject(p, 0, &buffer, noColor)
@@ -29,7 +28,7 @@ func printProject(project *Project, depth int, buffer *bytes.Buffer, noColor boo
 	color.NoColor = noColor
 
 	buffer.WriteString(strings.Repeat("    ", depth))
-	buffer.WriteString(color.GreenString(project.ArtifactId))
+	buffer.WriteString(color.GreenString(project.ArtifactID))
 	buffer.WriteString(" (")
 	buffer.WriteString(project.Version)
 	buffer.WriteString(")")
@@ -43,23 +42,6 @@ func printProject(project *Project, depth int, buffer *bytes.Buffer, noColor boo
 	for _, child := range project.Children {
 		printProject(child, depth+1, buffer, noColor)
 	}
-}
-
-func PrintToTerminal(output string) {
-	fmt.Println(output)
-}
-
-func PrintToFile(output string, filename string) {
-	f, err := os.Create(filename)
-	check(err)
-	defer f.Close()
-
-	w := bufio.NewWriter(f)
-	_, err = w.WriteString(output)
-	check(err)
-
-	w.Flush()
-	f.Sync()
 }
 
 func check(e error) {

@@ -9,69 +9,96 @@ import (
 	"strings"
 )
 
+// Projects is a list of type Project
 type Projects []*Project
 
+// Project represent a single project with links to parent and child projects
 type Project struct {
 	Parent                *Project `json:"-"`
 	Children              Projects
-	ArtifactId            string
-	GroupId               string
+	ArtifactID            string
+	GroupID               string
 	Version               string
 	MismatchParentVersion string
 	FullPath              string
 }
 
+// PomProjects a list of type PomProject
 type PomProjects []PomProject
 
+// PomProject represent a pom file
 type PomProject struct {
 	XMLName    xml.Name      `xml:"project"`
 	Parent     PomParent     `xml:"parent"`
-	GroupId    PomGroupId    `xml:"groupId"`
-	ArtifactId PomArtifactId `xml:"artifactId"`
+	GroupID    PomGroupID    `xml:"groupId"`
+	ArtifactID PomArtifactID `xml:"artifactId"`
 	Version    PomVersion    `xml:"version"`
 	FullPath   string
 }
+
+// PomParent contains information on this projects parent
 type PomParent struct {
-	GroupId    PomGroupId    `xml:"groupId"`
-	ArtifactId PomArtifactId `xml:"artifactId"`
+	GroupID    PomGroupID    `xml:"groupId"`
+	ArtifactID PomArtifactID `xml:"artifactId"`
 	Version    PomVersion    `xml:"version"`
 }
-type PomGroupId struct {
+
+// PomGroupID is the group to which this project belongs
+type PomGroupID struct {
 	Value string `xml:",chardata"`
 }
-type PomArtifactId struct {
+// PomArtifactID the id of the given pom file
+type PomArtifactID struct {
 	Value string `xml:",chardata"`
 }
+
+// PomVersion is the version of this project
 type PomVersion struct {
 	Value string `xml:",chardata"`
 }
 
-func GetProjects(projectPath string) Projects {
+// GetProjects get all projects by reading the given directory
+func GetProjects(projectPath string, verbose bool) Projects {
 	files := getDirectories(projectPath)
 	pomProjects := PomProjects{}
+    
+    if verbose {
+        log.Printf("Found %d files/directories under %s", len(files), projectPath)
+    }
 
 	// Loop over each one
 	for _, directory := range files {
+        
 		if !directory.IsDir() {
+            if verbose {
+                log.Printf("Skipping %s as it is not a directory", directory.Name())
+            }
 			continue
 		}
 		pomFile := path.Join(projectPath, directory.Name(), "pom.xml")
 
 		// Check for a pom.xml
 		if _, err := os.Stat(pomFile); os.IsNotExist(err) {
+            if verbose {
+                log.Printf("Unable to find pom file at %s", pomFile)
+            }
 			continue
 		}
 
 		pomProject, err := parseFile(pomFile)
-		if err != nil || len(pomProject.ArtifactId.Value) == 0 {
+		if err != nil || len(pomProject.ArtifactID.Value) == 0 {
 			log.Println("Invalid pom file at: " + pomFile)
 		}
 		pomProject.FullPath = pomFile
 
 		pomProjects = append(pomProjects, pomProject)
+        
+        if verbose {
+            log.Printf("Successfully read in project %s from %s", pomProject.ArtifactID, pomFile)
+        }
 	}
 
-	projects := transform(pomProjects)
+	projects := transform(pomProjects, verbose)
 	return projects
 }
 
@@ -99,7 +126,10 @@ func parseFile(pomFile string) (PomProject, error) {
 	return *v, err
 }
 
-func transform(pomProjects PomProjects) Projects {
+func transform(pomProjects PomProjects, verbose bool) Projects {
+    if verbose {
+        log.Printf("Transforming %d projects", len(pomProjects))
+    }
 	parentProjects := Projects{}
 
 	var allProjects map[string]*Project
@@ -107,34 +137,40 @@ func transform(pomProjects PomProjects) Projects {
 
 	var remaining int
 	remaining = 0
+    // Loop until we don't process any projects in a single run
 	for remaining != len(pomProjects)-len(allProjects) {
 		remaining = len(pomProjects) - len(allProjects)
 		// Loop over each project
 		for _, pomProject := range pomProjects {
-			if allProjects[pomProject.ArtifactId.Value] != nil {
+			if allProjects[pomProject.ArtifactID.Value] != nil {
+                if verbose {
+                    log.Printf("Skipping %s as it has already been processed", pomProject.ArtifactID.Value)
+                }
 				continue
 			}
-
-			if pomProject.Parent.ArtifactId.Value != "" && allProjects[pomProject.Parent.ArtifactId.Value] == nil {
+			if pomProject.Parent.ArtifactID.Value != "" && allProjects[pomProject.Parent.ArtifactID.Value] == nil {
+                if verbose {
+                    log.Printf("Skipping %s as the parent project has not been processed yet", pomProject.ArtifactID.Value)
+                }
 				continue
 			}
 
 			// Build up our linked project
 			project := Project{}
-			project.ArtifactId = pomProject.ArtifactId.Value
-			project.GroupId = pomProject.GroupId.Value
+			project.ArtifactID = pomProject.ArtifactID.Value
+			project.GroupID = pomProject.GroupID.Value
 			project.Version = pomProject.Version.Value
 			project.FullPath = pomProject.FullPath
 
 			// No matter what add it to the all projects map
-			allProjects[project.ArtifactId] = &project
+			allProjects[project.ArtifactID] = &project
 
 			// If it has no parent add it to the parent projects
-			if pomProject.Parent.ArtifactId.Value == "" {
+			if pomProject.Parent.ArtifactID.Value == "" {
 				parentProjects = append(parentProjects, &project)
 			} else {
 				// If it has a parent look up the parent in the all map
-				parent := allProjects[pomProject.Parent.ArtifactId.Value]
+				parent := allProjects[pomProject.Parent.ArtifactID.Value]
 
 				// Update the pointer to our parent
 				project.Parent = parent
@@ -145,15 +181,22 @@ func transform(pomProjects PomProjects) Projects {
 					project.MismatchParentVersion = pomProject.Parent.Version.Value
 				}
 			}
+            if verbose {
+                if project.Parent == nil {
+                    log.Printf("%s added with no parent", project.ArtifactID)
+                } else {
+                    log.Printf("%s added with parent %s and mismatch version of %s", project.ArtifactID, project.Parent.ArtifactID, project.MismatchParentVersion)   
+                }
+            }
 		}
 
 	}
 	return parentProjects
 }
 
-func (slice Projects) find(artifactId string) Project {
+func (slice Projects) find(artifactID string) Project {
 	for _, project := range slice {
-		if project.ArtifactId == artifactId {
+		if project.ArtifactID == artifactID {
 			return *project
 		}
 	}
@@ -165,7 +208,7 @@ func (slice Projects) Len() int {
 }
 
 func (slice Projects) Less(i, j int) bool {
-	return strings.ToLower(slice[i].ArtifactId) < strings.ToLower(slice[j].ArtifactId)
+	return strings.ToLower(slice[i].ArtifactID) < strings.ToLower(slice[j].ArtifactID)
 }
 
 func (slice Projects) Swap(i, j int) {
