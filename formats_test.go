@@ -28,7 +28,7 @@ func TestJson(t *testing.T) {
 
 	json := projects.AsJSON()
 
-	assert.Equal(t, "[{\"Children\":null,\"ArtifactID\":\"testproj\",\"GroupID\":\"\",\"Version\":\"\",\"MismatchParentVersion\":\"\",\"FullPath\":\"\"}]", json)
+	assert.Equal(t, "[{\"Children\":null,\"ArtifactID\":\"testproj\",\"GroupID\":\"\",\"Version\":\"\",\"MismatchParentVersion\":\"\",\"FullPath\":\"\",\"MissingParent\":\"\"}]", json)
 }
 
 func TestJsonWithChild(t *testing.T) {
