@@ -10,7 +10,7 @@ func TestTransform(t *testing.T) {
 	pomProject := PomProject{ArtifactID: PomArtifactID{Value: "myartifact"}}
 
 	pomProjects := PomProjects{}
-	pomProjects = append(pomProjects, pomProject)
+	pomProjects = append(pomProjects, &pomProject)
 	output := transform(pomProjects, false)
 
 	assert.Equal(t, "myartifact", output[0].ArtifactID)
@@ -30,8 +30,8 @@ func TestTransformParentChild(t *testing.T) {
 		},
 	}
 	pomProjects := PomProjects{}
-	pomProjects = append(pomProjects, parent)
-	pomProjects = append(pomProjects, child)
+	pomProjects = append(pomProjects, &parent)
+	pomProjects = append(pomProjects, &child)
 	output := transform(pomProjects, false)
 
 	assert.Equal(t, "parent", output[0].ArtifactID)
@@ -55,8 +55,8 @@ func TestTransformParentChildOutOfOrder(t *testing.T) {
 		},
 	}
 	pomProjects := PomProjects{}
-	pomProjects = append(pomProjects, child)
-	pomProjects = append(pomProjects, parent)
+	pomProjects = append(pomProjects, &child)
+	pomProjects = append(pomProjects, &parent)
 	output := transform(pomProjects, false)
 
 	assert.Equal(t, "parent", output[0].ArtifactID)
@@ -83,8 +83,8 @@ func TestTransformParentMatchingVersion(t *testing.T) {
 		},
 	}
 	pomProjects := PomProjects{}
-	pomProjects = append(pomProjects, child)
-	pomProjects = append(pomProjects, parent)
+	pomProjects = append(pomProjects, &child)
+	pomProjects = append(pomProjects, &parent)
 	output := transform(pomProjects, false)
 
 	assert.Equal(t, "parent", output[0].ArtifactID)
@@ -111,8 +111,8 @@ func TestTransformParentWrongVersion(t *testing.T) {
 		},
 	}
 	pomProjects := PomProjects{}
-	pomProjects = append(pomProjects, child)
-	pomProjects = append(pomProjects, parent)
+	pomProjects = append(pomProjects, &child)
+	pomProjects = append(pomProjects, &parent)
 	output := transform(pomProjects, false)
 
 	assert.Equal(t, "parent", output[0].ArtifactID)
@@ -126,7 +126,7 @@ func TestParentVersionMatchDefault(t *testing.T) {
 
 	parent := PomProject{ArtifactID: PomArtifactID{Value: "parent"}, Version: PomVersion{Value: "2.0"}}
 	pomProjects := PomProjects{}
-	pomProjects = append(pomProjects, parent)
+	pomProjects = append(pomProjects, &parent)
 	output := transform(pomProjects, false)
 
 	assert.Equal(t, "parent", output[0].ArtifactID)

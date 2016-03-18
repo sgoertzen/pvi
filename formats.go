@@ -36,6 +36,9 @@ func printProject(project *Project, depth int, buffer *bytes.Buffer, noColor boo
 	if project.MismatchParentVersion != "" {
 		buffer.WriteString(color.YellowString(" Warning: looking for parent version: "))
 		buffer.WriteString(project.MismatchParentVersion)
+	} else if project.MissingParent != "" {
+		buffer.WriteString(color.YellowString(" Warning: parent not found: "))
+		buffer.WriteString(project.MissingParent)
 	}
 	buffer.WriteString("\n")
 	sort.Sort(project.Children)

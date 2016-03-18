@@ -15,7 +15,7 @@ type config struct {
 	format   *string
 	filename *string
 	nocolor  *bool
-	debug  *bool
+	debug    *bool
 }
 
 // Program to read in poms and determine
@@ -38,10 +38,10 @@ func getConfiguration() config {
 	kingpin.CommandLine.HelpFlag.Short('?')
 
 	kingpin.Parse()
-    
-    if *config.debug {
-        config.print()
-    }
+
+	if *config.debug {
+		config.print()
+	}
 
 	*config.path, _ = filepath.Abs(*config.path)
 	return config
@@ -54,7 +54,7 @@ func validate(projects pvi.Projects, c config) {
 	}
 }
 
-func outputResults(projects pvi.Projects, c config) {    
+func outputResults(projects pvi.Projects, c config) {
 	sort.Sort(projects)
 
 	// Turn color off if we are printing to a file
@@ -75,5 +75,5 @@ func outputResults(projects pvi.Projects, c config) {
 }
 
 func (c config) print() {
-    log.Printf("Running with filename: %s, format: %s, Nocolor: %t, Path: %s", *c.filename, *c.format, *c.nocolor, *c.path)
+	log.Printf("Running with filename: %s, format: %s, Nocolor: %t, Path: %s", *c.filename, *c.format, *c.nocolor, *c.path)
 }

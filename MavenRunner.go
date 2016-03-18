@@ -28,8 +28,8 @@ func (project *Project) build(runIT bool, debug bool) (int, error) {
 
 	for in.Scan() {
 		if debug {
-		    log.Printf(in.Text())
-        }
+			log.Printf(in.Text())
+		}
 	}
 
 	err = cmd.Wait()

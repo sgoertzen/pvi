@@ -9,7 +9,7 @@ import (
 
 func TestParentEdit(t *testing.T) {
 	// Cleanup
-    defer SetParentVersionInPom("./test-data/child/pom.xml", "3.1.4", "3.1.1")
+	defer SetParentVersionInPom("./test-data/child/pom.xml", "3.1.4", "3.1.1")
 
 	projects := GetProjects("./test-data/", false)
 	parent := projects.find("parent-test")

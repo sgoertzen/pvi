@@ -10,7 +10,6 @@ import (
 func TestGetProjects(t *testing.T) {
 	projects := GetProjects("./test-data/", false)
 	parent := projects.find("parent-test")
-	assert.NotEmpty(t, parent)
 
 	assert.Equal(t, "parent-test", parent.ArtifactID)
 	assert.Equal(t, "3.1.4", parent.Version)
@@ -20,4 +19,10 @@ func TestGetProjects(t *testing.T) {
 		assert.Equal(t, "2.2", parent.Children[0].Version)
 		assert.Equal(t, "3.1.1", parent.Children[0].MismatchParentVersion)
 	}
+}
+
+func TestOrphan(t *testing.T) {
+	projects := GetProjects("./test-data/", false)
+	orphan := projects.find("orphan-test")
+	assert.NotEmpty(t, orphan.ArtifactID)
 }
