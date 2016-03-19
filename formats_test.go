@@ -9,7 +9,7 @@ func TestText(t *testing.T) {
 	projects := Projects{}
 	projects = append(projects, &Project{ArtifactID: "testproj", Version: "1.0"})
 
-	text := projects.AsText(true)
+	text := projects.AsText(true, false)
 
 	assert.Equal(t, "testproj (1.0)\n", text)
 }
@@ -17,7 +17,7 @@ func TestTextColor(t *testing.T) {
 	projects := Projects{}
 	projects = append(projects, &Project{ArtifactID: "testproj", Version: "1.0"})
 
-	text := projects.AsText(false)
+	text := projects.AsText(false, false)
 
 	assert.Equal(t, "\x1b[32mtestproj\x1b[0m (1.0)\n", text)
 }
