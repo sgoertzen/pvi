@@ -16,15 +16,15 @@ func (projects Projects) AsJSON() string {
 }
 
 // AsText will return the projects in a readable test format.
-func (projects Projects) AsText(noColor bool) string {
+func (projects Projects) AsText(noColor bool, showpath bool) string {
 	var buffer bytes.Buffer
 	for _, p := range projects {
-		printProject(p, 0, &buffer, noColor)
+		printProject(p, 0, &buffer, noColor, showpath)
 	}
 	return buffer.String()
 }
 
-func printProject(project *Project, depth int, buffer *bytes.Buffer, noColor bool) {
+func printProject(project *Project, depth int, buffer *bytes.Buffer, noColor bool, showpath bool) {
 	color.NoColor = noColor
 
 	buffer.WriteString(strings.Repeat("    ", depth))
@@ -40,10 +40,13 @@ func printProject(project *Project, depth int, buffer *bytes.Buffer, noColor boo
 		buffer.WriteString(color.YellowString(" Warning: parent not found: "))
 		buffer.WriteString(project.MissingParent)
 	}
+    if showpath {
+		buffer.WriteString(color.CyanString(" " + project.FullPath))
+    }
 	buffer.WriteString("\n")
 	sort.Sort(project.Children)
 	for _, child := range project.Children {
-		printProject(child, depth+1, buffer, noColor)
+		printProject(child, depth+1, buffer, noColor, showpath)
 	}
 }
 

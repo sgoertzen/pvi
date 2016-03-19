@@ -21,6 +21,7 @@ Flags:
   -f, --filename=FILENAME  The file in which the output should be stored. If this is left off the output will be printed to the console
   -n, --nocolor            Do not color the output. Ignored if filename is specified.
   -d, --debug              Output debug information during the run.
+  -p, --showpath           Show the path information for each project.
   -v, --version            Show application version.
 
 Args:

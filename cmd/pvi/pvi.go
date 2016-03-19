@@ -16,6 +16,7 @@ type config struct {
 	filename *string
 	nocolor  *bool
 	debug    *bool
+    showpath *bool
 }
 
 // Program to read in poms and determine
@@ -33,7 +34,8 @@ func getConfiguration() config {
 	config.filename = kingpin.Flag("filename", "The file in which the output should be stored.  If this is left off the output will be printed to the console").Short('f').String()
 	config.nocolor = kingpin.Flag("nocolor", "Do not color the output.  Ignored if filename is specified.").Default("false").Short('n').Bool()
 	config.debug = kingpin.Flag("debug", "Output debug information during the run.").Default("false").Short('d').Bool()
-	kingpin.Version("1.0.0")
+    config.showpath = kingpin.Flag("showpath", "Show the path information for each project.").Default("false").Short('p').Bool()
+	kingpin.Version("1.1.0")
 	kingpin.CommandLine.VersionFlag.Short('v')
 	kingpin.CommandLine.HelpFlag.Short('?')
 
@@ -62,7 +64,7 @@ func outputResults(projects pvi.Projects, c config) {
 
 	var output string
 	if strings.EqualFold(*c.format, "TEXT") {
-		output = projects.AsText(*c.nocolor)
+		output = projects.AsText(*c.nocolor, *c.showpath)
 	} else {
 		output = projects.AsJSON()
 	}
